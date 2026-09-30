@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight 4 — Personal Information &amp; Adjectives (A1)</title>
+<style>
+  :root{
+    --navy:#0b1f3a; --navy2:#122a4d; --sky:#1ea7e8; --amber:#f5a623;
+    --green:#28c76f; --red:#ea5455; --purple:#8e6ef2;
+    --ink:#122036; --paper:#f4f8fc; --card:#ffffff; --muted:#6b7c93;
+    --radius:16px; --shadow:0 8px 24px rgba(11,31,58,0.12);
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);}
+  body{min-height:100vh;}
+  header.topbar{
+    background:linear-gradient(135deg,var(--navy) 0%, var(--navy2) 100%);
+    color:#fff;padding:16px 18px 12px;position:sticky;top:0;z-index:50;
+    box-shadow:0 4px 18px rgba(0,0,0,.25);
+  }
+  .topbar-inner{max-width:1150px;margin:0 auto;}
+  .badge{
+    display:inline-block;background:var(--sky);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:1px;padding:5px 12px;border-radius:20px;text-transform:uppercase;margin-bottom:8px;
+  }
+  header.topbar h1{margin:0 0 4px;font-size:clamp(18px,3.6vw,26px);}
+  header.topbar p{margin:0 0 12px;color:#b9c8de;font-size:13px;}
+  nav.phasenav{display:flex;gap:6px;flex-wrap:wrap;}
+  nav.phasenav button{
+    flex:1 1 100px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+    color:#dce6f5;padding:8px 6px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;
+    transition:.2s;text-align:center;
+  }
+  nav.phasenav button .num{display:block;font-size:9px;font-weight:800;color:var(--amber);letter-spacing:1px;margin-bottom:2px;}
+  nav.phasenav button.active{background:var(--sky);border-color:var(--sky);color:#fff;}
+  nav.phasenav button:hover:not(.active){background:rgba(255,255,255,0.16);}
+  .progress-outer{height:6px;background:rgba(255,255,255,0.15);border-radius:6px;margin-top:10px;overflow:hidden;}
+  .progress-inner{height:100%;width:0%;background:linear-gradient(90deg,var(--sky),var(--amber));transition:width .4s ease;}
+  main{max-width:1150px;margin:0 auto;padding:26px 18px 70px;}
+  .phase{display:none;animation:fadeIn .4s ease;}
+  .phase.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .phase-title{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .phase-title .bar{width:5px;height:26px;background:var(--sky);border-radius:3px;}
+  .phase-title h2{margin:0;font-size:clamp(19px,3.2vw,25px);}
+  .phase-sub{color:var(--muted);margin:0 0 22px;font-size:14.5px;max-width:760px;}
+  .lab-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;margin-bottom:20px;}
+  .audio-player-box{
+    background:#eef4fb;border-left:5px solid var(--sky);padding:16px 20px;border-radius:10px;
+    display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap;
+  }
+  .audio-btn-group{display:flex;gap:8px;flex-shrink:0;}
+  .audio-btn{
+    width:44px;height:44px;border-radius:50%;color:#fff;border:none;
+    font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:.2s;box-shadow:0 4px 12px rgba(11,31,58,0.15);
+  }
+  .audio-btn:hover{transform:scale(1.08);}
+  .audio-btn.play-btn{background:var(--sky);}
+  .audio-btn.play-btn:hover{background:var(--navy);}
+  .audio-btn.pause-btn{background:var(--amber);}
+  .audio-btn.pause-btn:hover{background:var(--red);}
+  .audio-btn.small{width:36px;height:36px;font-size:14px;}
+  .audio-info{flex:1;min-width:150px;}
+  .audio-info h4{margin:0 0 4px;font-size:15px;color:var(--navy);}
+  .audio-info p{margin:0;font-size:12.5px;color:var(--muted);}
+  .question-block{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid #eef4fb;}
+  .question-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+  .q-text{font-size:15.5px;font-weight:700;color:var(--ink);margin-bottom:12px;}
+  .opt-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+  .opt-btn{
+    background:#f7fafd;border:2px solid #e2ebf3;border-radius:12px;padding:12px 16px;
+    font-size:14px;font-weight:600;color:var(--ink);text-align:left;cursor:pointer;transition:.15s;
+    display:flex;align-items:center;gap:10px;
+  }
+  .opt-btn:hover{border-color:var(--sky);background:#fff;}
+  .opt-btn.correct{background:#e8f9ee;border-color:var(--green);color:#1c8a4d;}
+  .opt-btn.wrong{background:#fdecec;border-color:var(--red);color:#c53030;}
+  .opt-btn:disabled{opacity:0.6;cursor:not-allowed;}
+  /* Complete-the-word style */
+  .complete-item{margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #eef4fb;}
+  .complete-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+  .complete-sentence{font-size:17px;font-weight:700;color:var(--navy);margin:10px 0;line-height:1.8;}
+  .blank-input{
+    display:inline-block;min-width:140px;padding:6px 10px;border:2px dashed var(--sky);
+    border-radius:6px;font-size:15px;font-weight:700;color:var(--ink);
+    background:#fff;outline:none;text-align:center;margin:0 4px;
+  }
+  .blank-input:focus{border-color:var(--navy);border-style:solid;}
+  .blank-input.correct{border-color:var(--green);border-style:solid;background:#e8f9ee;color:#1c8a4d;}
+  .blank-input.wrong{border-color:var(--red);border-style:solid;background:#fdecec;color:#c53030;}
+  .blank-input:disabled{opacity:0.75;}
+  .complete-check-btn{
+    background:var(--sky);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-weight:700;
+    cursor:pointer;font-size:13.5px;transition:.2s;margin-top:8px;
+  }
+  .complete-check-btn:hover{background:var(--navy);}
+  .complete-check-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .complete-feedback{font-size:13px;font-weight:700;margin-top:8px;min-height:18px;}
+  .complete-feedback.ok{color:var(--green);}
+  .complete-feedback.no{color:var(--red);}
+  .attempt-tag{
+    display:inline-block;font-size:11px;font-weight:800;color:var(--amber);background:#fff2da;
+    padding:3px 9px;border-radius:20px;margin-left:8px;letter-spacing:.5px;
+  }
+  .attempt-tag.maxed{color:var(--red);background:#fdecec;font-weight:900;}
+  .retry-note{
+    background:#fff6e6;border-left:5px solid var(--amber);padding:12px 16px;border-radius:10px;
+    font-size:13px;color:#7a5300;margin-bottom:20px;
+  }
+  .final-wrap{max-width:750px;margin:0 auto;text-align:center;}
+  .final-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:40px 26px;}
+  .medal{font-size:80px;margin-bottom:6px;}
+  .final-card h3{font-size:26px;color:var(--navy);margin:0 0 4px;}
+  .final-card .medal-label{font-weight:800;color:var(--amber);text-transform:uppercase;letter-spacing:1px;font-size:13px;margin-bottom:18px;}
+  .final-score-big{font-size:52px;font-weight:900;color:var(--sky);margin-bottom:4px;}
+  .final-score-sub{color:var(--muted);font-size:13px;margin-bottom:26px;}
+  .final-breakdown{display:flex;flex-direction:column;gap:12px;text-align:left;margin-bottom:26px;}
+  .fb-row{display:flex;align-items:center;gap:12px;}
+  .fb-row .fb-label{width:200px;font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0;}
+  .fb-row .fb-bar-outer{flex:1;height:10px;background:#e2ebf3;border-radius:6px;overflow:hidden;}
+  .fb-row .fb-bar-inner{height:100%;background:linear-gradient(90deg,var(--sky),var(--green));border-radius:6px;}
+  .fb-row .fb-val{width:60px;text-align:right;font-size:12.5px;font-weight:800;color:var(--muted);}
+  .restart-btn{background:var(--amber);border:none;color:#3a2600;padding:13px 26px;border-radius:10px;font-weight:800;cursor:pointer;font-size:14.5px;}
+  .restart-btn:hover{background:var(--sky);color:#fff;}
+  .result-box{margin-top:20px;padding:20px;border-radius:12px;font-weight:700;font-size:18px;}
+  .result-box.pass{background:#e8f9ee;color:var(--green);border:2px solid var(--green);}
+  .result-box.fail{background:#fdecec;color:var(--red);border:2px solid var(--red);}
+  footer.bottom{text-align:center;color:var(--muted);font-size:12px;padding:20px;}
+  footer.bottom span{color:var(--sky);font-weight:700;}
+  @media(max-width:640px){
+    nav.phasenav{gap:5px;}
+    nav.phasenav button{font-size:10px;padding:7px 4px;}
+    .fb-row .fb-label{width:130px;font-size:11px;}
+    .audio-player-box{gap:10px;}
+    .audio-btn-group{gap:5px;}
+    .audio-btn{width:38px;height:38px;font-size:15px;}
+    .blank-input{min-width:100px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="badge">Aviation English · Flight 4 · A1</span>
+    <h1>Flight 4 — Personal Information &amp; Adjectives</h1>
+    <p>Credentials, Cabin Nouns, Action Verbs, and Operational Adjectives · ICAO A1 Level</p>
+    <nav class="phasenav" id="phaseNav">
+      <button class="phase-btn active" data-phase="1"><span class="num">SECTION 1</span>Complete It</button>
+      <button class="phase-btn" data-phase="2"><span class="num">SECTION 2</span>Listening (Medium)</button>
+      <button class="phase-btn" data-phase="3"><span class="num">SECTION 3</span>Listening (Long)</button>
+      <button class="phase-btn" data-phase="4"><span class="num">SECTION 4</span>Listening Drill</button>
+      <button class="phase-btn" data-phase="5"><span class="num">SECTION 5</span>Listening Roleplay</button>
+      <button class="phase-btn" data-phase="6"><span class="num">SECTION 6</span>Final Review</button>
+    </nav>
+    <div class="progress-outer"><div class="progress-inner" id="topProgress"></div></div>
+  </div>
+</header>
+
+<main>
+
+  <section class="phase active" id="phase1">
+    <div class="phase-title"><span class="bar"></span><h2>Section 1: Complete the Missing Word</h2></div>
+    <p class="phase-sub">Listen to each sentence and type the missing word in the blank. 3 attempts per sentence.</p>
+    <div class="retry-note">💡 Escucha la oración completa y escribe SOLO la palabra que falta.</div>
+    <div class="lab-card" id="completeArea"></div>
+  </section>
+
+  <section class="phase" id="phase2">
+    <div class="phase-title"><span class="bar"></span><h2>Section 2: Medium Listening — Captain &amp; Systems</h2></div>
+    <p class="phase-sub">Listen to two short dialogues and answer the questions. 3 attempts per question.</p>
+    <div id="listenMediumArea"></div>
+  </section>
+
+  <section class="phase" id="phase3">
+    <div class="phase-title"><span class="bar"></span><h2>Section 3: Long Listening — Full Pre-Flight Briefing</h2></div>
+    <p class="phase-sub">Listen to the full briefing and answer the questions. 3 attempts per question.</p>
+    <div id="listenLongArea"></div>
+  </section>
+
+  <section class="phase" id="phase4">
+    <div class="phase-title"><span class="bar"></span><h2>Section 4: Listening Drill — Choose What You Heard</h2></div>
+    <p class="phase-sub">Listen carefully to each sentence and choose the option that matches exactly what you heard. 3 attempts per question.</p>
+    <div class="retry-note">🎧 Solo verás las opciones. Debes escuchar el audio para identificar la frase correcta.</div>
+    <div class="lab-card" id="drillArea"></div>
+  </section>
+
+  <section class="phase" id="phase5">
+    <div class="phase-title"><span class="bar"></span><h2>Section 5: Listening Roleplay — Choose the Correct Response</h2></div>
+    <p class="phase-sub">Listen to the question and select the correct professional response. 3 attempts per question.</p>
+    <div class="retry-note">🎧 Escucha la pregunta (no la verás escrita) y elige la respuesta correcta.</div>
+    <div class="lab-card" id="roleplayArea"></div>
+  </section>
+
+  <section class="phase" id="phase6">
+    <div class="phase-title"><span class="bar"></span><h2>Final Review &amp; Operational Summary</h2></div>
+    <p class="phase-sub">Comprehensive evaluation of your Flight 4 performance.</p>
+    <div class="final-wrap" id="finalArea"></div>
+  </section>
+
+</main>
+
+<footer class="bottom">✈️ Flight 4 Complete · <span>Personal Information &amp; Adjectives · ICAO A1</span></footer>
+
+<script>
+/* ============================================================
+   AUDIO SCRIPTS — Flight 4 A1
+   ============================================================ */
+const AUDIOS = {
+  // Section 1 — Complete the Word (full sentence audio)
+  c1: "I hold a pilot license.",
+  c2: "My certificate is active.",
+  c3: "I am based in Madrid.",
+  c4: "The route is very long.",
+  c5: "I have four thousand flight hours.",
+  c6: "The autopilot is serviceable.",
+  c7: "The galley is unserviceable.",
+  c8: "The flight level is stable.",
+  c9: "The runway is clear today.",
+  c10: "Stay composed during the emergency.",
+
+  // Section 2 — Medium Listening
+  s2a: "Good morning. My name is Captain Miller. I hold an active pilot license and a first-class medical certificate. I am based at Barajas Airport in Madrid. I have four thousand flight hours. I speak Spanish, English, and a little French.",
+
+  s2b: "First Officer, is the weather radar serviceable? Yes, it is serviceable. Is the galley microwave serviceable? No, it is unserviceable. Check the cabin and report any problems. Is the runway clear? No, it is foggy and dangerous. We must wait.",
+
+  // Section 3 — Long Listening
+  s3: "Good morning, I'm Captain Miller. I hold an active pilot license and a first-class medical certificate. I am based at Barajas Airport in Madrid. I have four thousand flight hours. I speak Spanish, English, and a little French. The autopilot is serviceable and the flight level is stable. The weather radar is serviceable. However, the galley microwave is unserviceable. The runway is foggy and dangerous. We must stay composed and wait for better conditions. Safety is our number one priority.",
+
+  // Section 4 — Listening Drill
+  dr1: "I hold an active pilot license.",
+  dr2: "My base is Barajas Airport.",
+  dr3: "I have four thousand flight hours.",
+  dr4: "The autopilot is serviceable.",
+  dr5: "The galley microwave is unserviceable.",
+  dr6: "The flight level is stable.",
+  dr7: "The runway is foggy and dangerous.",
+  dr8: "Stay composed during the emergency.",
+  dr9: "I speak Spanish, English and a little French.",
+  dr10: "My certificate number is C C nine eight five four.",
+  dr11: "I am type rated on the Airbus A three twenty.",
+  dr12: "The weather radar is serviceable.",
+  dr13: "Check the cabin and report any problems.",
+  dr14: "We must wait for better weather conditions.",
+  dr15: "Rest is important for all crew members.",
+
+  // Section 5 — Listening Roleplay
+  rp1: "What license do you hold?",
+  rp2: "Where are you based?",
+  rp3: "How many flight hours do you have?",
+  rp4: "What languages do you speak?",
+  rp5: "Is the autopilot serviceable?",
+  rp6: "Is the galley microwave unserviceable?",
+  rp7: "What is the flight level status?",
+  rp8: "Is the runway clear today?",
+  rp9: "Are you composed for the emergency?",
+  rp10: "What is your type rating?"
+};
+
+/* ============================================================
+   AUDIO PLAYER — PLAY (restart) / PAUSE
+   ============================================================ */
+function playAudio(key){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(AUDIOS[key]);
+  u.lang = 'en-US';
+  u.rate = 0.75;
+  u.pitch = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang && v.lang.startsWith('en'));
+  if(enVoice) u.voice = enVoice;
+  window.speechSynthesis.speak(u);
+}
+function pauseAudio(){
+  if(!('speechSynthesis' in window)) return;
+  if(window.speechSynthesis.speaking && !window.speechSynthesis.paused){
+    window.speechSynthesis.pause();
+  }
+}
+window.speechSynthesis && window.speechSynthesis.getVoices();
+
+/* ============================================================
+   SOUND FX
+   ============================================================ */
+let audioCtx;
+function getCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playDing(){
+  try{
+    const ctx = getCtx();
+    [880, 1320].forEach((freq, i)=>{
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type='sine'; osc.frequency.value=freq;
+      const start=ctx.currentTime+i*0.09;
+      gain.gain.setValueAtTime(0.0001,start);
+      gain.gain.exponentialRampToValueAtTime(0.25,start+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001,start+0.25);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start); osc.stop(start+0.28);
+    });
+  }catch(e){}
+}
+function playBuzz(){
+  try{
+    const ctx = getCtx();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.type='sawtooth'; osc.frequency.value=130;
+    const start=ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001,start);
+    gain.gain.exponentialRampToValueAtTime(0.2,start+0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001,start+0.35);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(start); osc.stop(start+0.38);
+  }catch(e){}
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* ============================================================
+   GLOBAL STATS
+   ============================================================ */
+const STATS = {
+  totalCorrect: 0,
+  totalWrong: 0,
+  sections: {
+    s1: { correct: 0, wrong: 0, max: 10 },
+    s2: { correct: 0, wrong: 0, max: 8 },
+    s3: { correct: 0, wrong: 0, max: 5 },
+    s4: { correct: 0, wrong: 0, max: 15 },
+    s5: { correct: 0, wrong: 0, max: 10 }
+  }
+};
+function addCorrect(sec){ STATS.totalCorrect++; STATS.sections[sec].correct++; }
+function addWrong(sec){ STATS.totalWrong++; STATS.sections[sec].wrong++; }
+
+/* ============================================================
+   SECTION 1 — COMPLETE THE MISSING WORD
+   ============================================================ */
+const COMPLETE_DATA = [
+  { id:'c1', audio:'c1', sentence:'I hold a pilot ______.', answer:'license' },
+  { id:'c2', audio:'c2', sentence:'My certificate is ______.', answer:'active' },
+  { id:'c3', audio:'c3', sentence:'I am ______ in Madrid.', answer:'based' },
+  { id:'c4', audio:'c4', sentence:'The route is very ______.', answer:'long' },
+  { id:'c5', audio:'c5', sentence:'I have four ______ flight hours.', answer:'thousand' },
+  { id:'c6', audio:'c6', sentence:'The autopilot is ______.', answer:'serviceable' },
+  { id:'c7', audio:'c7', sentence:'The galley is ______.', answer:'unserviceable' },
+  { id:'c8', audio:'c8', sentence:'The flight level is ______.', answer:'stable' },
+  { id:'c9', audio:'c9', sentence:'The runway is ______ today.', answer:'clear' },
+  { id:'c10', audio:'c10', sentence:'Stay ______ during the emergency.', answer:'composed' }
+];
+
+const completeState = {};
+
+function buildComplete(){
+  const area = document.getElementById('completeArea');
+  area.innerHTML = COMPLETE_DATA.map((item, i) => {
+    completeState[item.id] = { attempts:0, solved:false, maxAttempts:3 };
+    const parts = item.sentence.split('______');
+    return `
+      <div class="complete-item" id="${item.id}">
+        <div class="audio-btn-group" style="margin-bottom:8px;">
+          <button class="audio-btn play-btn small" onclick="playAudio('${item.audio}')">🔊</button>
+          <button class="audio-btn pause-btn small" onclick="pauseAudio()">⏸</button>
+          <span style="font-weight:700;color:var(--muted);font-size:13px;margin-left:8px;">Sentence ${i+1} <span class="attempt-tag" id="${item.id}-tag">0/3 attempts</span></span>
+        </div>
+        <div class="complete-sentence">
+          ${parts[0]}<input class="blank-input" id="${item.id}-input" type="text" placeholder="type here...">${parts[1] || ''}
+        </div>
+        <button class="complete-check-btn" id="${item.id}-check" onclick="checkComplete('${item.id}')">Check</button>
+        <div class="complete-feedback" id="${item.id}-fb"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function checkComplete(id){
+  const state = completeState[id];
+  if(state.solved) return;
+  if(state.attempts >= state.maxAttempts) return;
+
+  const item = COMPLETE_DATA.find(x => x.id === id);
+  const input = document.getElementById(id+'-input');
+  const fb = document.getElementById(id+'-fb');
+  const tag = document.getElementById(id+'-tag');
+  const val = input.value.trim().toLowerCase();
+
+  if(val.length < 2){
+    fb.textContent = '⚠️ Please type a word.';
+    fb.className = 'complete-feedback no';
+    return;
+  }
+
+  if(val === item.answer.toLowerCase()){
+    state.solved = true;
+    input.disabled = true;
+    input.classList.add('correct');
+    addCorrect('s1');
+    fb.textContent = `✔ Correct! The word is "${item.answer}".`;
+    fb.className = 'complete-feedback ok';
+    playDing();
+    document.getElementById(id+'-check').disabled = true;
+    tag.textContent = '✔ Solved';
+    tag.style.color = 'var(--green)';
+    tag.style.background = '#e8f9ee';
+  } else {
+    state.attempts++;
+    addWrong('s1');
+    input.classList.add('wrong');
+    const rem = state.maxAttempts - state.attempts;
+    fb.textContent = `❌ Not correct. ${rem} attempts left.`;
+    fb.className = 'complete-feedback no';
+    playBuzz();
+    tag.textContent = state.attempts + '/3 attempts';
+    tag.style.color = 'var(--red)';
+    tag.style.background = '#fdecec';
+    setTimeout(()=>{ input.classList.remove('wrong'); }, 800);
+
+    if(state.attempts >= state.maxAttempts){
+      input.disabled = true;
+      document.getElementById(id+'-check').disabled = true;
+      tag.textContent = '❌ Max attempts (3/3)';
+      tag.className = 'attempt-tag maxed';
+      fb.textContent = `❌ Maximum attempts reached. The correct word is: "${item.answer}"`;
+    }
+  }
+}
+
+/* ============================================================
+   SECTIONS 2 & 3 — LISTENING MCQ
+   ============================================================ */
+const LISTEN_MEDIUM = [
+  { id:'lm_a', audio:'s2a', title:'Audio A — Captain\'s Introduction', sub:'Personal information & credentials',
+    questions:[
+      { id:'lm_a1', q:'What license does Captain Miller hold?',
+        options:[
+          {t:'An active pilot license', c:true},
+          {t:'A driver license', c:false},
+          {t:'A student license', c:false}
+        ]},
+      { id:'lm_a2', q:'Where is Captain Miller based?',
+        options:[
+          {t:'At Barajas Airport in Madrid', c:true},
+          {t:'At Charles de Gaulle in Paris', c:false},
+          {t:'At Heathrow in London', c:false}
+        ]},
+      { id:'lm_a3', q:'How many flight hours does Captain Miller have?',
+        options:[
+          {t:'Four thousand flight hours', c:true},
+          {t:'Fourteen thousand flight hours', c:false},
+          {t:'Four hundred flight hours', c:false}
+        ]},
+      { id:'lm_a4', q:'What languages does Captain Miller speak?',
+        options:[
+          {t:'Spanish, English, and a little French', c:true},
+          {t:'Spanish only', c:false},
+          {t:'English and German', c:false}
+        ]}
+    ]
+  },
+  { id:'lm_b', audio:'s2b', title:'Audio B — Pre-Flight Systems Check', sub:'Serviceable vs unserviceable',
+    questions:[
+      { id:'lm_b1', q:'What is the status of the weather radar?',
+        options:[
+          {t:'It is serviceable', c:true},
+          {t:'It is unserviceable', c:false},
+          {t:'It is broken', c:false}
+        ]},
+      { id:'lm_b2', q:'What is the status of the galley microwave?',
+        options:[
+          {t:'It is unserviceable', c:true},
+          {t:'It is serviceable', c:false},
+          {t:'It is stable', c:false}
+        ]},
+      { id:'lm_b3', q:'What is the weather condition at the runway?',
+        options:[
+          {t:'Foggy and dangerous', c:true},
+          {t:'Clear and safe', c:false},
+          {t:'Sunny and stable', c:false}
+        ]},
+      { id:'lm_b4', q:'What must the crew do?',
+        options:[
+          {t:'Wait for better conditions', c:true},
+          {t:'Fly immediately', c:false},
+          {t:'Land on another runway', c:false}
+        ]}
+    ]
+  }
+];
+
+const LISTEN_LONG = [
+  { id:'ll', audio:'s3', title:'Full Pre-Flight Briefing', sub:'Complete captain briefing',
+    questions:[
+      { id:'ll_1', q:'What type of certificate does Captain Miller hold?',
+        options:[
+          {t:'A first-class medical certificate', c:true},
+          {t:'A second-class certificate', c:false},
+          {t:'A student certificate', c:false}
+        ]},
+      { id:'ll_2', q:'What is the status of the autopilot?',
+        options:[
+          {t:'Serviceable', c:true},
+          {t:'Unserviceable', c:false},
+          {t:'Broken', c:false}
+        ]},
+      { id:'ll_3', q:'What is the status of the flight level?',
+        options:[
+          {t:'Stable', c:true},
+          {t:'Unstable', c:false},
+          {t:'Dangerous', c:false}
+        ]},
+      { id:'ll_4', q:'What adjective describes the runway?',
+        options:[
+          {t:'Foggy and dangerous', c:true},
+          {t:'Clear and safe', c:false},
+          {t:'Long and dry', c:false}
+        ]},
+      { id:'ll_5', q:'What is the number one priority according to the captain?',
+        options:[
+          {t:'Safety', c:true},
+          {t:'Speed', c:false},
+          {t:'Comfort', c:false}
+        ]}
+    ]
+  }
+];
+
+const listenState = {};
+
+function buildListening(containerId, dataList, sectionKey){
+  const container = document.getElementById(containerId);
+  container.innerHTML = dataList.map(item => {
+    const questionsHTML = item.questions.map((q, qi) => {
+      listenState[q.id] = { attempts:0, solved:false, maxAttempts:3 };
+      const shuffled = shuffle([...q.options]);
+      return `
+        <div class="question-block" id="${q.id}">
+          <div class="q-text">${qi+1}. ${q.q} <span class="attempt-tag" id="${q.id}-tag">0/3 attempts</span></div>
+          <div class="opt-grid">
+            ${shuffled.map(o => `<button class="opt-btn" onclick="checkListenMCQ('${q.id}', this, ${o.c}, '${sectionKey}')">${o.t}</button>`).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="lab-card">
+        <div class="audio-player-box">
+          <div class="audio-btn-group">
+            <button class="audio-btn play-btn" onclick="playAudio('${item.audio}')">🔊</button>
+            <button class="audio-btn pause-btn" onclick="pauseAudio()">⏸</button>
+          </div>
+          <div class="audio-info">
+            <h4>${item.title}</h4>
+            <p>${item.sub}</p>
+          </div>
+        </div>
+        ${questionsHTML}
+      </div>
+    `;
+  }).join('');
+}
+
+function checkListenMCQ(qid, btn, isCorrect, sec){
+  const state = listenState[qid];
+  if(state.solved) return;
+  if(state.attempts >= state.maxAttempts) return;
+
+  const block = document.getElementById(qid);
+  const tag = document.getElementById(qid+'-tag');
+
+  if(isCorrect){
+    btn.classList.add('correct');
+    block.querySelectorAll('.opt-btn').forEach(b => { b.style.pointerEvents='none'; b.disabled=true; });
+    state.solved = true;
+    addCorrect(sec);
+    playDing();
+    tag.textContent = '✔ Correct! (' + (state.attempts+1) + '/3)';
+    tag.style.color = 'var(--green)';
+    tag.style.background = '#e8f9ee';
+  } else {
+    btn.classList.add('wrong');
+    state.attempts++;
+    addWrong(sec);
+    playBuzz();
+    const rem = state.maxAttempts - state.attempts;
+    tag.textContent = state.attempts + '/3 attempts — ' + rem + ' left';
+    tag.style.color = 'var(--red)';
+    tag.style.background = '#fdecec';
+    setTimeout(()=>{ btn.classList.remove('wrong'); }, 600);
+
+    if(state.attempts >= state.maxAttempts){
+      block.querySelectorAll('.opt-btn').forEach(b => { b.style.pointerEvents='none'; b.disabled=true; });
+      tag.textContent = '❌ Max attempts (3/3)';
+      tag.className = 'attempt-tag maxed';
+    }
+  }
+}
+
+/* ============================================================
+   SECTION 4 — LISTENING DRILL
+   ============================================================ */
+const DRILL_DATA = [
+  { id:'dr1', audio:'dr1', options:[
+    {t:'I hold a certificate.', c:false},
+    {t:'I hold an active pilot license.', c:true},
+    {t:'I have a flight hour.', c:false}
+  ]},
+  { id:'dr2', audio:'dr2', options:[
+    {t:'My base is Madrid.', c:false},
+    {t:'My base is Barajas Airport.', c:true},
+    {t:'My base is Barcelona.', c:false}
+  ]},
+  { id:'dr3', audio:'dr3', options:[
+    {t:'I have four thousand flight hours.', c:true},
+    {t:'I have fourteen flight hours.', c:false},
+    {t:'I have forty flight hours.', c:false}
+  ]},
+  { id:'dr4', audio:'dr4', options:[
+    {t:'The autopilot is unserviceable.', c:false},
+    {t:'The autopilot is serviceable.', c:true},
+    {t:'The autopilot is stable.', c:false}
+  ]},
+  { id:'dr5', audio:'dr5', options:[
+    {t:'The galley microwave is serviceable.', c:false},
+    {t:'The galley microwave is stable.', c:false},
+    {t:'The galley microwave is unserviceable.', c:true}
+  ]},
+  { id:'dr6', audio:'dr6', options:[
+    {t:'The flight level is unstable.', c:false},
+    {t:'The flight level is stable.', c:true},
+    {t:'The flight level is clear.', c:false}
+  ]},
+  { id:'dr7', audio:'dr7', options:[
+    {t:'The runway is clear and safe.', c:false},
+    {t:'The runway is foggy and dangerous.', c:true},
+    {t:'The runway is long and dry.', c:false}
+  ]},
+  { id:'dr8', audio:'dr8', options:[
+    {t:'Stay calm during the emergency.', c:false},
+    {t:'Stay stressed during the emergency.', c:false},
+    {t:'Stay composed during the emergency.', c:true}
+  ]},
+  { id:'dr9', audio:'dr9', options:[
+    {t:'I speak French and Spanish.', c:false},
+    {t:'I speak Spanish, English and a little French.', c:true},
+    {t:'I speak English only.', c:false}
+  ]},
+  { id:'dr10', audio:'dr10', options:[
+    {t:'My certificate number is C C nine eight five four.', c:true},
+    {t:'My certificate number is C C nine five eight four.', c:false},
+    {t:'My certificate number is C C nine eight four five.', c:false}
+  ]},
+  { id:'dr11', audio:'dr11', options:[
+    {t:'I am type rated on the Boeing seven three seven.', c:false},
+    {t:'I am type rated on the Airbus A three twenty.', c:true},
+    {t:'I am type rated on the Airbus A three eighty.', c:false}
+  ]},
+  { id:'dr12', audio:'dr12', options:[
+    {t:'The weather radar is unserviceable.', c:false},
+    {t:'The weather radar is serviceable.', c:true},
+    {t:'The weather radar is foggy.', c:false}
+  ]},
+  { id:'dr13', audio:'dr13', options:[
+    {t:'Check the galley and report problems.', c:false},
+    {t:'Check the cabin and report any problems.', c:true},
+    {t:'Check the runway and report problems.', c:false}
+  ]},
+  { id:'dr14', audio:'dr14', options:[
+    {t:'We must wait for better weather conditions.', c:true},
+    {t:'We must fly in dangerous weather.', c:false},
+    {t:'We must land immediately.', c:false}
+  ]},
+  { id:'dr15', audio:'dr15', options:[
+    {t:'Rest is important for pilots only.', c:false},
+    {t:'Rest is important for all crew members.', c:true},
+    {t:'Rest is not important for crew members.', c:false}
+  ]}
+];
+
+const drillState = {};
+
+function buildDrill(){
+  const area = document.getElementById('drillArea');
+  area.innerHTML = DRILL_DATA.map((item, i) => {
+    drillState[item.id] = { attempts:0, solved:false, maxAttempts:3 };
+    const shuffled = shuffle([...item.options]);
+    return `
+      <div class="question-block" id="${item.id}">
+        <div class="q-text">${i+1}. Listen and choose what you heard: <span class="attempt-tag" id="${item.id}-tag">0/3 attempts</span></div>
+        <div class="audio-btn-group" style="margin-bottom:12px;">
+          <button class="audio-btn play-btn small" onclick="playAudio('${item.audio}')">🔊</button>
+          <button class="audio-btn pause-btn small" onclick="pauseAudio()">⏸</button>
+        </div>
+        <div class="opt-grid">
+          ${shuffled.map(o => `<button class="opt-btn" onclick="checkDrill('${item.id}', this, ${o.c})">${o.t}</button>`).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function checkDrill(qid, btn, isCorrect){
+  const state = drillState[qid];
+  if(state.solved) return;
+  if(state.attempts >= state.maxAttempts) return;
+
+  const block = document.getElementById(qid);
+  const tag = document.getElementById(qid+'-tag');
+
+  if(isCorrect){
+    btn.classList.add('correct');
+    block.querySelectorAll('.opt-btn').forEach(b => { b.style.pointerEvents='none'; b.disabled=true; });
+    state.solved = true;
+    addCorrect('s4');
+    playDing();
+    tag.textContent = '✔ Correct! (' + (state.attempts+1) + '/3)';
+    tag.style.color = 'var(--green)';
+    tag.style.background = '#e8f9ee';
+  } else {
+    btn.classList.add('wrong');
+    state.attempts++;
+    addWrong('s4');
+    playBuzz();
+    const rem = state.maxAttempts - state.attempts;
+    tag.textContent = state.attempts + '/3 attempts — ' + rem + ' left';
+    tag.style.color = 'var(--red)';
+    tag.style.background = '#fdecec';
+    setTimeout(()=>{ btn.classList.remove('wrong'); }, 600);
+
+    if(state.attempts >= state.maxAttempts){
+      block.querySelectorAll('.opt-btn').forEach(b => { b.style.pointerEvents='none'; b.disabled=true; });
+      tag.textContent = '❌ Max attempts (3/3)';
+      tag.className = 'attempt-tag maxed';
+    }
+  }
+}
+
+/* ============================================================
+   SECTION 5 — LISTENING ROLEPLAY
+   ============================================================ */
+const ROLEPLAY_DATA = [
+  { id:'rp1', audio:'rp1', options:[
+    {t:'I hold an A T P L.', c:true},
+    {t:'I hold a base.', c:false},
+    {t:'I hold a route.', c:false}
+  ]},
+  { id:'rp2', audio:'rp2', options:[
+    {t:'I am based in Madrid.', c:true},
+    {t:'I am based tomorrow.', c:false},
+    {t:'I am based a license.', c:false}
+  ]},
+  { id:'rp3', audio:'rp3', options:[
+    {t:'I have four thousand flight hours.', c:true},
+    {t:'I have four certificates.', c:false},
+    {t:'I have four bases.', c:false}
+  ]},
+  { id:'rp4', audio:'rp4', options:[
+    {t:'I speak Spanish and English.', c:true},
+    {t:'I speak four hours.', c:false},
+    {t:'I speak an airport.', c:false}
+  ]},
+  { id:'rp5', audio:'rp5', options:[
+    {t:'Yes, it is serviceable.', c:true},
+    {t:'Yes, it is a license.', c:false},
+    {t:'Yes, it is Spanish.', c:false}
+  ]},
+  { id:'rp6', audio:'rp6', options:[
+    {t:'Yes, it is unserviceable.', c:true},
+    {t:'Yes, it is stable.', c:false},
+    {t:'Yes, it is clear.', c:false}
+  ]},
+  { id:'rp7', audio:'rp7', options:[
+    {t:'The flight level is stable.', c:true},
+    {t:'The flight level is foggy.', c:false},
+    {t:'The flight level is Spanish.', c:false}
+  ]},
+  { id:'rp8', audio:'rp8', options:[
+    {t:'No, it is foggy and dangerous.', c:true},
+    {t:'No, it is serviceable.', c:false},
+    {t:'No, it is based.', c:false}
+  ]},
+  { id:'rp9', audio:'rp9', options:[
+    {t:'Yes, I am composed.', c:true},
+    {t:'Yes, I am unserviceable.', c:false},
+    {t:'Yes, I am foggy.', c:false}
+  ]},
+  { id:'rp10', audio:'rp10', options:[
+    {t:'I am type rated on the Airbus A three twenty.', c:true},
+    {t:'I am type rated in Madrid.', c:false},
+    {t:'I am type rated four thousand.', c:false}
+  ]}
+];
+
+const roleplayState = {};
+
+function buildRoleplay(){
+  const area = document.getElementById('roleplayArea');
+  area.innerHTML = ROLEPLAY_DATA.map((item, i) => {
+    roleplayState[item.id] = { attempts:0, solved:false, maxAttempts:3 };
+    const shuffled = shuffle([...item.options]);
+    return `
+      <div class="question-block" id="${item.id}">
+        <div class="q-text">${i+1}. Listen and choose the correct response: <span class="attempt-tag" id="${item.id}-tag">0/3 attempts</span></div>
+        <div class="audio-btn-group" style="margin-bottom:12px;">
+          <button class="audio-btn play-btn small" onclick="playAudio('${item.audio}')">🔊</button>
+          <button class="audio-btn pause-btn small" onclick="pauseAudio()">⏸</button>
+        </div>
+        <div class="opt-grid">
+          ${shuffled.map(o => `<button class="opt-btn" onclick="checkRoleplay('${item.id}', this, ${o.c})">${o.t}</button>`).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function checkRoleplay(qid, btn, isCorrect){
+  const state = roleplayState[qid];
+  if(state.solved) return;
+  if(state.attempts >= state.maxAttempts) return;
+
+  const block = document.getElementById(qid);
+  const tag = document.getElementById(qid+'-tag');
+
+  if(isCorrect){
+    btn.classList.add('correct');
+    block.querySelectorAll('.opt-btn').forEach(b => { b.style.pointerEvents='none'; b.disabled=true; });
+    state.solved = true;
+    addCorrect('s5');
+    playDing();
+    tag.textContent = '✔ Correct! (' + (state.attempts+1) + '/3)';
+    tag.style.color = 'var(--green)';
+    tag.style.background = '#e8f9ee';
+  } else {
+    btn.classList.add('wrong');
+    state.attempts++;
+    addWrong('s5');
+    playBuzz();
+    const rem = state.maxAttempts - state.attempts;
+    tag.textContent = state.attempts + '/3 attempts — ' + rem + ' left';
+    tag.style.color = 'var(--red)';
+    tag.style.background = '#fdecec';
+    setTimeout(()=>{ btn.classList.remove('wrong'); }, 600);
+
+    if(state.attempts >= state.maxAttempts){
+      block.querySelectorAll('.opt-btn').forEach(b => { b.style.pointerEvents='none'; b.disabled=true; });
+      tag.textContent = '❌ Max attempts (3/3)';
+      tag.className = 'attempt-tag maxed';
+    }
+  }
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+const phaseBtns = document.querySelectorAll('.phase-btn');
+const phases = document.querySelectorAll('.phase');
+
+function goToPhase(n){
+  phases.forEach(p => p.classList.remove('active'));
+  phaseBtns.forEach(b => b.classList.remove('active'));
+  document.getElementById('phase'+n).classList.add('active');
+  document.querySelector(`.phase-btn[data-phase="${n}"]`).classList.add('active');
+  document.getElementById('topProgress').style.width = (n/6*100)+'%';
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(n == 6) renderFinalReview();
+}
+phaseBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=> goToPhase(parseInt(btn.dataset.phase)));
+});
+
+/* ============================================================
+   FINAL REVIEW
+   ============================================================ */
+function renderFinalReview(){
+  const totalAttempts = STATS.totalCorrect + STATS.totalWrong;
+  const pct = totalAttempts > 0 ? Math.round((STATS.totalCorrect/totalAttempts)*100) : 0;
+  const passed = pct >= 80;
+
+  let medal = '🥉', label = 'Keep practicing Flight 4!';
+  if(pct >= 90){ medal = '🥇'; label = 'Excellent! ICAO A1 Mastery!'; }
+  else if(pct >= 80){ medal = '🥈'; label = 'Great job! ICAO A1 achieved!'; }
+  else { medal = '🥉'; label = 'Below 80%. You must repeat the entire Lab.'; }
+
+  const rows = [
+    {label:'1. Complete the Word', val:STATS.sections.s1.correct, max:STATS.sections.s1.max},
+    {label:'2. Medium Listening', val:STATS.sections.s2.correct, max:STATS.sections.s2.max},
+    {label:'3. Long Listening', val:STATS.sections.s3.correct, max:STATS.sections.s3.max},
+    {label:'4. Listening Drill', val:STATS.sections.s4.correct, max:STATS.sections.s4.max},
+    {label:'5. Listening Roleplay', val:STATS.sections.s5.correct, max:STATS.sections.s5.max},
+  ];
+
+  let resultHTML = '';
+  if(passed){
+    resultHTML = `<div class="result-box pass">✅ <strong>PASSED!</strong> You achieved ${pct}% — above the 80% requirement. Well done, Captain!</div>`;
+  } else {
+    resultHTML = `<div class="result-box fail">❌ <strong>NOT PASSED</strong> — You achieved ${pct}%. The minimum required is 80%. You must repeat the entire Lab.</div>`;
+  }
+
+  document.getElementById('finalArea').innerHTML = `
+    <div class="final-card">
+      <div class="medal">${medal}</div>
+      <h3>Flight 4 — Complete!</h3>
+      <div class="medal-label">${label}</div>
+      <div class="final-score-big">${pct}%</div>
+      <div class="final-score-sub">✅ ${STATS.totalCorrect} correct · ❌ ${STATS.totalWrong} errors · Total attempts: ${totalAttempts}</div>
+      ${resultHTML}
+      <div class="final-breakdown">
+        ${rows.map(r => `
+          <div class="fb-row">
+            <div class="fb-label">${r.label}</div>
+            <div class="fb-bar-outer"><div class="fb-bar-inner" style="width:${r.max > 0 ? (r.val/r.max*100) : 0}%;"></div></div>
+            <div class="fb-val">${r.val}/${r.max}</div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="restart-btn" onclick="location.reload()">✈️ ${passed ? 'Fly Flight 4 Again' : 'Repeat Flight 4 (Required)'}</button>
+    </div>
+  `;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+buildComplete();
+buildListening('listenMediumArea', LISTEN_MEDIUM, 's2');
+buildListening('listenLongArea', LISTEN_LONG, 's3');
+buildDrill();
+buildRoleplay();
+goToPhase(1);
+
+setTimeout(()=>{
+  if('speechSynthesis' in window) window.speechSynthesis.getVoices();
+}, 500);
+</script>
+</body>
+</html>
